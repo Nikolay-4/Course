@@ -1,53 +1,56 @@
 version: '2.4'
 
 services:
-  app:
+  auth-service:
     build:
       context: ../
-      dockerfile: ./docker/php-fpm/Dockerfile
+      dockerfile: ./docker/php-fpm/Auth/Dockerfile
     volumes:
-      - ../App:/application
+      - ../AuthService:/auth
+
+  task-tracker-service:
+    build:
+      context: ../
+      dockerfile: ./docker/php-fpm/Task/Dockerfile
+    volumes:
+      - ../TaskTrackerService:/task
 
   #Nginx Service
   webserver:
     image: nginx:1.17.9-alpine
-    working_dir: /application
     volumes:
-      - ../App:/application
+      - ../AuthService:/auth
+      - ../TaskTrackerService:/task
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "${NGINX_PORT}:80"
 
-  pgbouncer-writer:
-    image: edoburu/pgbouncer
-    environment:
-      - DB_USER=${POSTGRESQL_USERNAME}
-      - DB_PASSWORD=${POSTGRESQL_PASSWORD}
-      - DB_HOST=postgresql-master
-      - DB_NAME=${POSTGRESQL_DATABASE}
-      - POOL_MODE=transaction
-      - ADMIN_USERS=${POSTGRESQL_USERNAME}
-    ports:
-      - '${PGBOUNCER_WRITER_PORT}:5432'
-    depends_on:
-      - postgresql-master
-
-
-  postgresql-master:
+  postgresql-auth-master:
     image: 'bitnami/postgresql:latest'
     volumes:
-      - 'postgresql_master_data:/bitnami/postgresql'
+      - 'postgresql_auth_master_data:/bitnami/postgresql'
     environment:
-      POSTGRESQL_USERNAME: ${POSTGRESQL_USERNAME}
-      POSTGRESQL_PASSWORD: ${POSTGRESQL_PASSWORD}
-      POSTGRESQL_DATABASE: ${POSTGRESQL_DATABASE}
+      POSTGRESQL_USERNAME: ${POSTGRESQL_AUTH_USERNAME}
+      POSTGRESQL_PASSWORD: ${POSTGRESQL_AUTH_PASSWORD}
+      POSTGRESQL_DATABASE: ${POSTGRESQL_AUTH_DATABASE}
+    ports:
+      - '${POSTGRESQL_AUTH_PORT}:5432'
 
+  postgresql-task-master:
+    image: 'bitnami/postgresql:latest'
+    volumes:
+      - 'postgresql_task_master_data:/bitnami/postgresql'
+    environment:
+      POSTGRESQL_USERNAME: ${POSTGRESQL_TASK_USERNAME}
+      POSTGRESQL_PASSWORD: ${POSTGRESQL_TASK_PASSWORD}
+      POSTGRESQL_DATABASE: ${POSTGRESQL_TASK_DATABASE}
+    ports:
+      - '${POSTGRESQL_TASK_PORT}:5432'
 
   redis:
     image: "redis:alpine"
     sysctls:
       net.core.somaxconn: 1024
-
 
   # брокер сообщений
   rabbitmq:
@@ -57,4 +60,5 @@ services:
 
 
 volumes:
-  postgresql_master_data:
+  postgresql_auth_master_data:
+  postgresql_task_master_data:

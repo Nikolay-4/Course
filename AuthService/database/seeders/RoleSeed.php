@@ -1,0 +1,20 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
+
+class RoleSeed extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        Role::updateOrCreate(['id' => 1], ['name' => 'user']);
+        Role::updateOrCreate(['id' => 2], ['name' => 'admin']);
+    }
+}
