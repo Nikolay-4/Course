@@ -1,6 +1,6 @@
 <?php
 
-namespace TaskTracker\Console\Commands;
+namespace Auth\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Composer;

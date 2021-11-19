@@ -1,6 +1,6 @@
 <?php
 
-namespace Auth\Services;
+namespace TaskTracker\Services;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exchange\AMQPExchangeType;

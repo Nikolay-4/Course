@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace TaskTracker\Http\Middleware;
 
-use App\Providers\RouteServiceProvider;
+use TaskTracker\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

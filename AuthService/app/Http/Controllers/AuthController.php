@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Auth\Http\Controllers;
 
-use App\Models\User;
-use App\Services\EventService;
+use Auth\Models\User;
+use Auth\Services\EventService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -82,7 +82,6 @@ class AuthController extends Controller
         $user->email = $input['email'];
         $user->password = Hash::make($input['password']);
         $user->save();
-
 
         $eventService = new EventService('registered');
         $eventService->emit([

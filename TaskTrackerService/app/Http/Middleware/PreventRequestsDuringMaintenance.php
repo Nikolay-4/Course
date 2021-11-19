@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace TaskTracker\Http\Middleware;
 
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance as Middleware;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace TaskTracker\Http\Middleware;
 
-use App\Models\User;
+use TaskTracker\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\JWTAuth;
