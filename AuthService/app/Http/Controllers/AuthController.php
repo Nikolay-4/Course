@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Registration\EmailRegisterRequest;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
+use App\Services\EventService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -83,38 +82,15 @@ class AuthController extends Controller
         $user->email = $input['email'];
         $user->password = Hash::make($input['password']);
         $user->save();
-//        event(new Registered($user));
 
 
-        $exchange = 'router';
-        $queue = 'msgs';
+        $eventService = new EventService('registered');
+        $eventService->emit([
+            'email' => $user->email,
+            'name' => $user->name
+        ]);
 
-        $connection = new AMQPStreamConnection(
-            config('queue.rabbitmq.host'),
-            config('queue.rabbitmq.port'),
-            config('queue.rabbitmq.user'),
-            config('queue.rabbitmq.password'),
-            config('queue.rabbitmq.vhost')
-        );
-        $channel = $connection->channel();
-
-        $channel->queue_declare($queue, false, true, false, false);
-
-        $channel->exchange_declare($exchange, AMQPExchangeType::DIRECT, false, true, false);
-
-        $channel->queue_bind($queue, $exchange);
-
-        $messageBody = [
-            'name' => 'user created',
-            'data' => $user
-        ];
-        $message = new AMQPMessage(json_encode($messageBody), array('content_type' => 'text/plain', 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT));
-        $channel->basic_publish($message, $exchange);
-
-        $channel->close();
-        $connection->close();
-
-        return response()->json(['message' => 'Письмо с подтверждением было отправлено на ваш почтовый ящик'], 201);
+        return response()->json(['message' => 'User registered'], 201);
     }
 
     /**
