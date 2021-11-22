@@ -8,10 +8,12 @@
         "php": "^7.3|^8.0",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "justinrainbow/json-schema": "^5.2",
         "laravel/framework": "^8.65",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "php-amqplib/php-amqplib": "^3.1",
+        "spatie/data-transfer-object": "^3.7",
         "spatie/laravel-permission": "^5.3",
         "tymon/jwt-auth": "^1.0"
     },

@@ -1,10 +1,12 @@
 <?php
 
-namespace Auth\Services;
+namespace Auth\Events;
 
+use Illuminate\Support\Facades\Log;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
+use Psy\Exception\ThrowUpException;
 
 class EventService
 {
@@ -47,7 +49,20 @@ class EventService
         foreach ($topics as $exchange) {
             $this->channel->queue_bind($queue, $exchange);
         }
-        $this->channel->basic_consume($queue, callback: $handler);
+
+        $this->channel->basic_consume($queue, callback: function (AMQPMessage $msg) use ($handler) {
+            try {
+                $data = json_decode($msg->body, true);
+
+                $event = UserCreatedEvent::fromArray($data);
+                $handler($event);
+            } catch (\Throwable $e) {
+                Log::error($e->getMessage());
+                Log::error('Event aborted');
+            }
+            $msg->ack();
+        });
+
         while ($this->channel->is_open()) {
             $this->channel->wait();
         }
@@ -58,6 +73,7 @@ class EventService
     {
         $msg = new AMQPMessage(json_encode($eventData));
         $this->channel->basic_publish($msg, $this->exchange);
+        Log::debug('Event emitted', [$msg]);
     }
 
 }

@@ -2,13 +2,11 @@
 
 namespace Auth\Http\Controllers;
 
+use Auth\Events\EventService;
+use Auth\Events\UserCreatedEvent;
 use Auth\Models\User;
-use Auth\Services\EventService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PhpAmqpLib\Exchange\AMQPExchangeType;
-use PhpAmqpLib\Message\AMQPMessage;
 
 class AuthController extends Controller
 {
@@ -81,13 +79,23 @@ class AuthController extends Controller
         $user->name = $input['name'];
         $user->email = $input['email'];
         $user->password = Hash::make($input['password']);
+//        todo добавить public id
         $user->save();
 
         $eventService = new EventService('registered');
-        $eventService->emit([
-            'email' => $user->email,
-            'name' => $user->name
+        $event = UserCreatedEvent::fromArray([
+            'eventId' => uniqid(),
+            'eventName' => 'userCreated',
+            'eventVersion' => 1.0,
+            'eventTime' => time(),
+            'producer' => 'AuthService',
+            'data' => [
+                'publicId' => 123,
+                'email' => $user->email,
+                'name' => $user->name,
+            ]
         ]);
+        $eventService->emit($event->toArray());
 
         return response()->json(['message' => 'User registered'], 201);
     }

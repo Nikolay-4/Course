@@ -3,7 +3,7 @@
 namespace TaskTracker\Console\Commands;
 
 use PhpAmqpLib\Message\AMQPMessage;
-use TaskTracker\Services\EventService;
+use TaskTracker\Events\EventService;
 use Illuminate\Console\Command;
 
 class EventHandler extends Command
@@ -41,9 +41,8 @@ class EventHandler extends Command
     {
 
         $eventService = new EventService();
-        $eventService->listen('TaskTrackerHandler', function (AMQPMessage $msg) {
-            dump($msg->body);
-            $msg->ack();
+        $eventService->listen('TaskTrackerHandler', function ($msg) {
+            dump($msg);
         }, [EventService::TOPIC_REGISTERED]);
         return Command::SUCCESS;
     }
