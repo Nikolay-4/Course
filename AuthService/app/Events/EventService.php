@@ -16,6 +16,13 @@ class EventService
     private AMQPStreamConnection $rabbitConnection;
 
     public const TOPIC_REGISTERED = 'registered';
+    public const TOPIC_USER_CUD = 'userCUD';
+
+    public const EVENT_CLASS_MAP = [
+        'userUpdated' => 'UserUpdatedEvent',
+        'userCreated' => 'UserCreatedEvent',
+        'userDeleted' => 'UserDeletedEvent',
+    ];
 
     public function __construct(string $topic = null)
     {

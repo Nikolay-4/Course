@@ -5,13 +5,13 @@ namespace Auth\Events;
 use Spatie\DataTransferObject\Attributes\MapFrom;
 use Spatie\DataTransferObject\DataTransferObject;
 
-class UserCreatedEvent extends BaseEvent
+class UserDeletedEvent extends BaseEvent
 {
 
 
 //    #[MapFrom('data')]
     public UserDto $data;
-    public const JSON_SCHEMA_PATH = 'JsonSchemes/createUserSchema.json';
+    public const JSON_SCHEMA_PATH = 'JsonSchemes/updateUserSchema.json';
 
     public function __construct(...$args)
     {
@@ -25,11 +25,11 @@ class UserCreatedEvent extends BaseEvent
 
 
 //    todo возможно лучше передавать объект user
-    public static function fromUserData(array $userData, string $producer): UserCreatedEvent
+    public static function fromUserData(array $userData, string $producer): UserDeletedEvent
     {
         $eventData = [
             'eventId' => uniqid(),
-            'eventName' => 'userCreated',
+            'eventName' => 'userDeleted',
             'eventVersion' => 1.0,
             'eventTime' => time(),
             'producer' => $producer,

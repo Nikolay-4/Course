@@ -8,12 +8,12 @@
     "examples": [
         {
             "eventId": "sewef2",
-            "eventName": "userCreated",
+            "eventName": "userUpdated",
             "eventVersion": 1.0,
             "eventTime": 123456789,
             "producer": "AuthService",
             "data": {
-                "publicId": "123",
+                "publicId": 123,
                 "email": "test@em.r",
                 "name": "popug"
             }
@@ -45,7 +45,7 @@
             "description": "An explanation about the purpose of this instance.",
             "default": "",
             "examples": [
-                "userCreated"
+                "userUpdated"
             ]
         },
         "eventVersion": {

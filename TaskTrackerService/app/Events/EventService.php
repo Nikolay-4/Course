@@ -7,6 +7,9 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exchange\AMQPExchangeType;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psy\Exception\ThrowUpException;
+use TaskTracker\Events\UserCreatedEvent;
+use TaskTracker\Events\UserDeletedEvent;
+use TaskTracker\Events\UserUpdatedEvent;
 
 class EventService
 {
@@ -16,7 +19,13 @@ class EventService
     private AMQPStreamConnection $rabbitConnection;
 
     public const TOPIC_REGISTERED = 'registered';
+    public const TOPIC_USER_CUD = 'userCUD';
 
+    public const EVENT_CLASS_MAP = [
+        'userUpdated' => \TaskTracker\Events\UserUpdatedEvent::class,
+        'userCreated' => \TaskTracker\Events\UserCreatedEvent::class,
+        'userDeleted' => \TaskTracker\Events\UserDeletedEvent::class,
+    ];
     public function __construct(string $topic = null)
     {
         $this->exchange = $topic;
@@ -54,7 +63,8 @@ class EventService
             try {
                 $data = json_decode($msg->body, true);
 
-                $event = UserCreatedEvent::fromArray($data);
+                $eventType = $data['eventName'];
+                $event = call_user_func([self::EVENT_CLASS_MAP[$eventType], 'fromArray'], $data);
                 $handler($event);
             } catch (\Throwable $e) {
                 Log::error($e->getMessage());

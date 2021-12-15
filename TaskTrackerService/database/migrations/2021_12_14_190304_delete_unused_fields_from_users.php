@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddPublicIdInUsers extends Migration
+class DeleteUnusedFieldsFromUsers extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddPublicIdInUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('public_id');
+            $table->dropColumn(['password', 'email_verified_at', 'remember_token']);
         });
     }
 
@@ -26,7 +26,7 @@ class AddPublicIdInUsers extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('public_id');
+            //
         });
     }
 }

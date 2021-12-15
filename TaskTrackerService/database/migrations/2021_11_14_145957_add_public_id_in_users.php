@@ -14,7 +14,7 @@ class AddPublicIdInUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('public_id')->default(uniqid());
+            $table->string('public_id');
         });
     }
 

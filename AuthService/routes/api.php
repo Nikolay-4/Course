@@ -1,6 +1,7 @@
 <?php
 
 use Auth\Http\Controllers\AuthController;
+use Auth\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,9 @@ Route::group([
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::get('me', [AuthController::class, 'me']);
     Route::post('registration', [AuthController::class, 'registration']);
+    Route::group(['middleware' => 'auth:api'], function () {
+        Route::put('users', [UserController::class, 'update']);
+    });
 
 });
 
